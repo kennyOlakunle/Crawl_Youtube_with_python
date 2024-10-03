@@ -1,34 +1,31 @@
 import os
-from googleapiclient.discovery import build
+import google_auth_oauthlib.flow
+import googleapiclient.discovery
+import googleapiclient.errors
 
-# Load the API key from the environment variable. (You can also hardcode the API key here. But rwmember to keep it secret)
-api_key = os.getenv('YOUTUBE_API_KEY')
+# Scopes define the level of access required
+scopes = ["https://www.googleapis.com/auth/youtube.force-ssl"]
 
-
-# Set up YouTube API client
-youtube = build('youtube', 'v3', developerKey=api_key)
-
-def search_videos(artist_name, max_results=10):
+def authenticate_youtube():
     """
-    Search for videos related to the gospel artist.
+    Authenticate using OAuth 2.0 and return the YouTube service object.
     """
-    request = youtube.search().list(
-        q=artist_name,
-        part='snippet',
-        type='video',
-        maxResults=max_results
-    )
-    response = request.execute()
-    
-    videos = []
-    for item in response['items']:
-        video_id = item['id']['videoId']
-        video_title = item['snippet']['title']
-        videos.append({'id': video_id, 'title': video_title})
-    
-    return videos
+    # OAuth 2.0 client secrets file from the Developer Console
+    client_secrets_file = "/Users/kehindeoabe/Downloads/Crawl_Youtube_with_python/client_secrets_file.json"
 
-def create_playlist(playlist_name, description="A playlist of gospel artist videos"):
+    # Get credentials and create an API client
+    flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(
+        client_secrets_file, scopes)
+    
+    # Use run_local_server() instead of run_console() for browser-based OAuth flow
+    credentials = flow.run_local_server(port=0)
+
+    youtube = googleapiclient.discovery.build(
+        "youtube", "v3", credentials=credentials)
+
+    return youtube
+
+def create_playlist(youtube, playlist_name, description="A playlist of gospel artist videos"):
     """
     Create a new playlist on YouTube.
     """
@@ -49,37 +46,17 @@ def create_playlist(playlist_name, description="A playlist of gospel artist vide
     response = request.execute()
     return response['id']
 
-def add_video_to_playlist(playlist_id, video_id):
-    """
-    Add a video to the playlist.
-    """
-    request = youtube.playlistItems().insert(
-        part="snippet",
-        body={
-            "snippet": {
-                "playlistId": playlist_id,
-                "resourceId": {
-                    "kind": "youtube#video",
-                    "videoId": video_id
-                }
-            }
-        }
-    )
-    request.execute()
+
 
 if __name__ == "__main__":
-    artist_name = "YOUR_GOSPEL_ARTIST_NAME"
-    playlist_name = f"{artist_name} Playlist"
+    # Authenticate and get YouTube service object
+    youtube = authenticate_youtube()
+
+    # Define the playlist name
+    playlist_name = "My Gospel Playlist"
+
+    # Create a new playlist
+    playlist_id = create_playlist(youtube, playlist_name)
+    print(f"Created playlist with ID: {playlist_id}")
+
     
-    # Step 1: Search for videos
-    videos = search_videos(artist_name)
-    
-    # Step 2: Create a new playlist
-    playlist_id = create_playlist(playlist_name)
-    
-    # Step 3: Add each video to the playlist
-    for video in videos:
-        add_video_to_playlist(playlist_id, video['id'])
-        print(f"Added video: {video['title']} to playlist.")
-    
-    print(f"Playlist '{playlist_name}' created with {len(videos)} videos.")
