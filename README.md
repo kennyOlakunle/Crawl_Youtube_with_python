@@ -1,30 +1,30 @@
-# Crawl Youtube with Python through Youtube API
+# Crawl Youtube with Python through Youtube API and OAuth 2.0 client
 
-This is a Python program that Crawl Youtube to get specific video titles and tags by calling Youtube API. This program get Theophilus Sunday's name by mentions and tags, then create a playlist based on this search. This program is only limited to this but other function can be added by automating search and implementing a User Interface for users to interact with. It is better to limit calls to the API
+This is a Python program that Crawl Youtube to get specific video titles and tags by calling Youtube API. This program get Theophilus Sunday's name by mentions and tags, then create a playlist based on this search. This program is only limited to this but other function can be added by automating search and implementing a User Interface for users to interact with. It is better to limit calls to the API.
 
+## YouTube Playlist Creator Documentation
 
-## Steps to be Taken
+### Overview
 
-To create a Python program that crawls YouTube to find videos mentioning a specific gospel artist and then creates a playlist, I used the YouTube Data API. Here's an overview of the steps involved:
+This Python script utilizes the YouTube Data API to authenticate a user and create a new playlist on their YouTube channel. It employs OAuth 2.0 for secure access and enables users to organize their favorite videos into a custom playlist.
 
-### Set up the YouTube Data API:
+### Requirements
+- Python 3.x
+- google-auth-oauthlib library
+- google-api-python-client library
+- A Google Cloud project with the YouTube Data API enabled
+- OAuth 2.0 client secrets file
 
-- Get an API key from the Google Developer Console.
+### Installation
+To install the required libraries, you can use pip:
 
-### Install the required libraries:
-`google-api-python-client` to interact with the YouTube API.
+```
+pip install google-auth-oauthlib google-api-python-client.
 
-### Search for videos mentioning the artist:
+```
 
-- Use the `youtube.search().list()` method to search for videos based on keywords (the gospel artist’s name).
-
-### Create a playlist:
-
-- Use the API to create a new playlist.
-- Add the video results to that playlist using the playlistItems.insert() method.
-
-### Program structure:
-
-- Search for the artist's videos.
-- Create a playlist.
-- Add videos to the playlist.
+### Usage
+1. Set up a Google Cloud project and enable the YouTube Data API.
+2. Obtain the OAuth 2.0 client secrets file (client_secrets_file.json).
+3. Replace the client_secrets_file path in the code with the path to your client secrets file.
+4. Run the script. A web browser will open for user authentication. Once authenticated, the script will create a new playlist.
